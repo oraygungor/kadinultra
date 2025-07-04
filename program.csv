@@ -1,0 +1,8 @@
+Tarih,Aktivite,Mesafe_km,Yukselme_m,Zone,Aciklama,Durum
+2025-07-01,Kolay Koşu,5,50,Zone 2,"Hafif tempo, nabız 130-140 aralığında.",T
+2025-07-02,Dinlenme,0,0,Yok,"Tam dinlenme veya 20 dk esneme.",O
+2025-07-03,Interval,8,100,Zone 4/5,"Isınma: 2km. Antrenman: 6x400m hızlı.",X
+2025-07-04,Kolay Koşu,6,70,Zone 2,"Dünkü sert antrenmanın yorgunluğunu atmak için.",T
+2025-07-05,Tepe Antrenmanı,7,250,Zone 4,"Isınma sonrası 8x200m yokuş yukarı koşu.",O
+2025-07-06,Uzun Koşu,15,150,Zone 2/3,"Yarış temposundan 1 dakika/km daha yavaş.",O
+2025-07-07,Dinlenme,0,0,Yok,"Bugün kesinlikle koşu yok.",O
