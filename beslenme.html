@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>40+ Kadın Ultra Koşucu İçin İnteraktif Takviye Rehberi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #1a1c2c;
+            --card-bg: #2a2d42;
+            --text-primary: #e0e1e6;
+            --text-secondary: #a8aabd;
+            --accent-glow: #7b68ee;
+            --border-color: #3a3d5a;
+
+            --utility-high: #27ae60;
+            --utility-moderate: #f39c12;
+            --utility-supportive: #3498db;
+            --utility-crucial: #e74c3c;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            margin: 0 0 0.5rem 0;
+            background: linear-gradient(90deg, #e0e1e6, #a8aabd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .filter-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .filter-btn {
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: 2px solid var(--border-color);
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-glow);
+            box-shadow: 0 0 15px rgba(123, 104, 238, 0.5);
+        }
+
+        .filter-btn.active {
+            background-color: var(--accent-glow);
+            color: white;
+            border-color: var(--accent-glow);
+        }
+
+        .supplement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            perspective: 1000px;
+        }
+
+        .card-container {
+            cursor: pointer;
+            min-height: 580px; /* Yükseklik yeni bölüm için artırıldı */
+        }
+
+        .supplement-card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 16px;
+        }
+        
+        .card-container.flipped .supplement-card {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card-front {
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .card-front-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 10px var(--accent-glow));
+        }
+
+        .card-front h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .card-front p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .card-front .click-indicator {
+            position: absolute;
+            bottom: 20px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-back h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent-glow);
+            margin: 0 0 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .card-back p {
+            font-size: 0.9rem;
+            margin: 0 0 1rem 0;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .card-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .utility-tag {
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            color: white;
+            font-size: 0.8rem;
+        }
+        
+        .utility-high { background-color: var(--utility-high); }
+        .utility-moderate { background-color: var(--utility-moderate); }
+        .utility-supportive { background-color: var(--utility-supportive); }
+        .utility-crucial { background-color: var(--utility-crucial); }
+
+        .reference-link a {
+            color: var(--accent-glow);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        .reference-link a:hover {
+            color: white;
+        }
+
+        .disclaimer {
+            margin-top: 4rem;
+            padding: 1.5rem;
+            background-color: rgba(123, 104, 238, 0.1);
+            border: 1px solid var(--accent-glow);
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(123, 104, 238, 0.3);
+        }
+        .disclaimer strong {
+            color: var(--accent-glow);
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        .disclaimer p {
+            margin: 0;
+            color: var(--text-secondary);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header class="header">
+        <h1>İnteraktif Takviye Rehberi</h1>
+        <p>40+ kadın ultra koşucular için bilimsel kanıtlara dayalı, 3D kartlarla zenginleştirilmiş modern takviye kılavuzu. Detaylar için kartlara tıklayın.</p>
+    </header>
+
+    <nav class="filter-nav">
+        <button class="filter-btn active" data-filter="all">Tümü</button>
+        <button class="filter-btn" data-filter="crucial">Hayati</button>
+        <button class="filter-btn" data-filter="high">Yüksek</button>
+        <button class="filter-btn" data-filter="moderate">Orta</button>
+        <button class="filter-btn" data-filter="supportive">Destekleyici</button>
+    </nav>
+
+    <main class="supplement-grid">
+        
+        <!-- Kart: Kolajen -->
+        <div class="card-container" data-category="high">
+            <div class="supplement-card">
+                <div class="card-face card-front">
+                    <div class="card-front-icon">🔗</div>
+                    <h2>Hidrolize Kolajen</h2>
+                    <p>Tendon ve Bağ Dokusu Desteği</p>
+                    <span class="click-indicator">Detaylar için tıkla</span>
+                </div>
+                <div class="card-face card-back">
+                    <h3>Kullanım ve Dozaj</h3>
+                    <p><strong>Antrenman Günü:</strong> Antrenmandan 45-60 dk önce 15g kolajen + 50mg C Vitamini.<br><strong>Dinlenme Günü:</strong> Gerekli değil.</p>
+                    <h3>Neden Gerekli?</h3>
+                    <p>Yüksek kilometre, dokularda mikro hasar oluşturur. Yaşla yavaşlayan kolajen sentezini destekleyerek onarımı hızlandırır.</p>
+                    <h3>Neyle Tüketilmemeli?</h3>
+                    <p>Bilinen önemli bir gıda etkileşimi yoktur. Ancak yüksek şeker tüketiminin vücudun kendi kolajen yapısına zarar verdiği unutulmamalıdır.</p>
+                    <div class="card-footer">
+                        <span class="utility-tag utility-high">Yüksek Fayda</span>
+                        <span class="reference-link"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5183725/" target="_blank">Referans →</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kart: Tip II Kolajen -->
+        <div class="card-container" data-category="high">
+            <div class="supplement-card">
+                <div class="card-face card-front">
+                    <div class="card-front-icon">🦴</div>
+                    <h2>Tip II Kolajen (UC-II®)</h2>
+                    <p>Eklem Sağlığı ve Hareketlilik</p>
+                    <span class="click-indicator">Detaylar için tıkla</span>
+                </div>
+                <div class="card-face card-back">
+                    <h3>Kullanım ve Dozaj</h3>
+                    <p><strong>Her Gün:</strong> Günde 40 mg. Zamanlaması önemli değildir, günün herhangi bir saatinde alınabilir.</p>
+                    <h3>Neden Gerekli?</h3>
+                    <p>Ultra mesafelerde eklem kıkırdağına binen yoğun stresi azaltır ve kıkırdağa yönelik iltihabi yanıtı yatıştırır.</p>
+                    <h3>Neyle Tüketilmemeli?</h3>
+                    <p>Bilinen önemli bir gıda etkileşimi yoktur.</p>
+                    <div class="card-footer">
+                        <span class="utility-tag utility-high">Yüksek Fayda</span>
+                        <span class="reference-link"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9313421/" target="_blank">Referans →</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kart: Demir -->
+        <div class="card-container" data-category="high">
+            <div class="supplement-card">
+                <div class="card-face card-front">
+                    <div class="card-front-icon">🩸</div>
+                    <h2>Demir Bisglisinat</h2>
+                    <p>Enerji ve Oksijen Kapasitesi</p>
+                    <span class="click-indicator">Detaylar için tıkla</span>
+                </div>
+                <div class="card-face card-back">
+                    <h3>Kullanım ve Dozaj</h3>
+                    <p><strong>Gün Aşırı:</strong> Sabahları 30-60 mg. Emilimi artırmak için C Vitamini içeren bir gıda ile alınması önerilir.</p>
+                    <h3>Neden Gerekli?</h3>
+                    <p>Kadın sporcular adet kanaması, ter ve darbe kaynaklı demir kaybı riski altındadır. Düşük demir, performansı doğrudan etkiler.</p>
+                    <h3>Neyle Tüketilmemeli?</h3>
+                    <p>Takviyeden 1-2 saat önce ve sonra çay, kahve, süt ürünleri ve kalsiyum takviyeleri ile birlikte alınmamalıdır.</p>
+                    <div class="card-footer">
+                        <span class="utility-tag utility-high">Yüksek Fayda</span>
+                        <span class="reference-link"><a href="https://pubmed.ncbi.nlm.nih.gov/38314561/" target="_blank">Referans →</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kart: D Vitamini & Kalsiyum -->
+        <div class="card-container" data-category="crucial">
+            <div class="supplement-card">
+                <div class="card-face card-front">
+                    <div class="card-front-icon">☀️</div>
+                    <h2>D Vitamini & Kalsiyum</h2>
+                    <p>Kemik Yoğunluğu ve Gücü</p>
+                    <span class="click-indicator">Detaylar için tıkla</span>
+                </div>
+                <div class="card-face card-back">
+                    <h3>Kullanım ve Dozaj</h3>
+                    <p><strong>Her Gün:</strong> Günde 1000-2000 IU D3 Vitamini ve yaklaşık 1200 mg Kalsiyum. Yemeklerle alınması tavsiye edilir.</p>
+                    <h3>Neden Gerekli?</h3>
+                    <p>Yaşla birlikte (özellikle 40'lı yaşlardan itibaren) başlayan hormonal değişimler, kemik yoğunluğu kaybını hızlandırabilir. Yüksek etkili sporlarda güçlü kemikler bu nedenle hayatidir.</p>
+                    <h3>Neyle Tüketilmemeli?</h3>
+                    <p>Kalsiyum, demir emilimini azaltabilir. Demir takviyesi ile aynı anda almaktan kaçının. Ispanak gibi oksalat içeren besinlerin aşırı tüketimi emilimi etkileyebilir.</p>
+                    <div class="card-footer">
+                        <span class="utility-tag utility-crucial">Hayati Önem</span>
+                        <span class="reference-link"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6950290/" target="_blank">Referans →</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kart: Omega-3 -->
+        <div class="card-container" data-category="moderate">
+            <div class="supplement-card">
+                <div class="card-face card-front">
+                    <div class="card-front-icon">🐟</div>
+                    <h2>Omega-3 (EPA & DHA)</h2>
+                    <p>İltihap Kontrolü ve Toparlanma</p>
+                    <span class="click-indicator">Detaylar için tıkla</span>
+                </div>
+                <div class="card-face card-back">
+                    <h3>Kullanım ve Dozaj</h3>
+                    <p><strong>Her Gün:</strong> Toplam 1-2 gram EPA+DHA. En iyi emilim için yağ içeren bir öğünle birlikte alın.</p>
+                    <h3>Neden Gerekli?</h3>
+                    <p>Ağır antrenman yükü kronik iltihaplanmaya yol açabilir. Omega-3, toparlanma sürecini iyileştirir ve kalp sağlığını korur.</p>
+                    <h3>Neyle Tüketilmemeli?</h3>
+                    <p>Bilinen önemli bir gıda etkileşimi yoktur. Kan sulandırıcı ilaç kullanılıyorsa doktora danışılmalıdır.</p>
+                    <div class="card-footer">
+                        <span class="utility-tag utility-moderate">Orta Fayda</span>
+                        <span class="reference-link"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8841499/" target="_blank">Referans →</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kart: Kreatin -->
+        <div class="card-container" data-category="moderate">
+            <div class="supplement-card">
+                <div class="card-face card-front">
+                    <div class="card-front-icon">⚡️</div>
+                    <h2>Kreatin Monohidrat</h2>
+                    <p>Anlık Güç ve Kas Koruma</p>
+                    <span class="click-indicator">Detaylar için tıkla</span>
+                </div>
+                <div class="card-face card-back">
+                    <h3>Kullanım ve Dozaj</h3>
+                    <p><strong>Her Gün:</strong> Günde 3-5 gram. Antrenman günleri sonrası, dinlenme günleri günün herhangi bir saatinde.</p>
+                    <h3>Neden Gerekli?</h3>
+                    <p>Yaşa bağlı azalan kas kütlesi ve güç rezervlerini destekler. Yarışın kritik son anlarında ekstra enerji sağlar.</p>
+                    <h3>Neyle Tüketilmemeli?</h3>
+                    <p>Yetersiz su tüketimi ile alınmamalıdır. Kas kramplarını önlemek ve böbrek sağlığını korumak için gün boyu yeterli hidrasyon kritiktir.</p>
+                    <div class="card-footer">
+                        <span class="utility-tag utility-moderate">Orta Fayda</span>
+                        <span class="reference-link"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10452317/" target="_blank">Referans →</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Kart: BCAA -->
+        <div class="card-container" data-category="supportive">
+            <div class="supplement-card">
+                <div class="card-face card-front">
+                    <div class="card-front-icon">💪</div>
+                    <h2>BCAA</h2>
+                    <p>Kas Onarımı ve Yorgunluk Yönetimi</p>
+                    <span class="click-indicator">Detaylar için tıkla</span>
+                </div>
+                <div class="card-face card-back">
+                    <h3>Kullanım ve Dozaj</h3>
+                    <p><strong>Antrenman Günü:</strong> Antrenmandan hemen önce veya antrenman sırasında 5-10 gram.<br><strong>Dinlenme Günü:</strong> Gerekli değil.</p>
+                    <h3>Neden Gerekli?</h3>
+                    <p>Uzun süreli ve yoğun antrenmanlar kas proteinlerinin yıkımına yol açar. BCAA takviyesi, bu yıkımı azaltarak toparlanmayı destekler.</p>
+                    <h3>Neyle Tüketilmemeli?</h3>
+                    <p>Bilinen önemli bir gıda etkileşimi yoktur. Kan şekerini etkileyebileceğinden, diyabet hastalarının doktora danışması önerilir.</p>
+                    <div class="card-footer">
+                        <span class="utility-tag utility-supportive">Destekleyici</span>
+                        <span class="reference-link"><a href="https://pubmed.ncbi.nlm.nih.gov/38230018/" target="_blank">Referans →</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="disclaimer">
+        <strong>Yasal Uyarı</strong>
+        <p>Bu rehber yalnızca bilgilendirme amaçlıdır. Herhangi bir takviye programına başlamadan önce mutlaka doktorunuza veya bir spor diyetisyenine danışmanız hayati önem taşır.</p>
+    </footer>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Kart çevirme mekanizması
+        const cardContainers = document.querySelectorAll('.card-container');
+        cardContainers.forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.toggle('flipped');
+            });
+        });
+
+        // Filtreleme mekanizması
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const cards = document.querySelectorAll('.card-container');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Aktif buton stilini ayarla
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                const filter = button.dataset.filter;
+
+                // Kartları filtrele
+                cards.forEach(card => {
+                    if (filter === 'all' || card.dataset.category === filter) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
