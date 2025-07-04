@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İnteraktif Koşu Takvimi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Tailwind gray-100 */
+        }
+        .calendar-grid {
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+        }
+        .day-cell {
+            transition: all 0.2s ease-in-out;
+        }
+        .day-cell:not(.empty):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        .past-day {
+            background-color: #e5e7eb; /* Tailwind gray-200 */
+            color: #6b7280; /* Tailwind gray-500 */
+        }
+        .past-day:hover {
+            background-color: #d1d5db; /* Tailwind gray-300 */
+        }
+        .today {
+            border: 2px solid #3b82f6; /* Tailwind blue-500 */
+            font-weight: 700;
+        }
+        .selected {
+            border: 2px solid #10b981; /* Tailwind emerald-500 */
+            transform: scale(1.02);
+        }
+        .details-card {
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Koşu Programım</h1>
+            <p class="text-gray-600 mt-2">İnteraktif antrenman takvimi.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Takvim Bölümü -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                <div class="flex justify-between items-center mb-6">
+                    <button id="prev-month" class="p-2 rounded-full hover:bg-gray-100">&lt;</button>
+                    <h2 id="month-year" class="text-2xl font-bold">Temmuz 2025</h2>
+                    <button id="next-month" class="p-2 rounded-full hover:bg-gray-100">&gt;</button>
+                </div>
+                <div class="grid grid-cols-7 gap-2 text-center font-semibold text-gray-500 mb-2">
+                    <div>Pzt</div><div>Sal</div><div>Çar</div><div>Per</div><div>Cum</div><div>Cmt</div><div>Paz</div>
+                </div>
+                <div id="calendar-grid" class="grid calendar-grid gap-2">
+                    <!-- Takvim günleri buraya JavaScript ile eklenecek -->
+                </div>
+            </div>
+
+            <!-- Detay Paneli -->
+            <div class="lg:col-span-1">
+                <div id="details-panel" class="bg-white p-6 rounded-xl shadow-lg sticky top-8 details-card">
+                    <h3 id="details-date" class="text-xl font-bold border-b pb-2 mb-4">Bir gün seçin</h3>
+                    <div id="details-content" class="space-y-4">
+                        <p class="text-gray-500">Takvimden bir güne tıklayarak antrenman detaylarını burada görebilirsiniz.</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elementleri ---
+            const calendarGrid = document.getElementById('calendar-grid');
+            const monthYearEl = document.getElementById('month-year');
+            const prevMonthBtn = document.getElementById('prev-month');
+            const nextMonthBtn = document.getElementById('next-month');
+            const detailsPanel = document.getElementById('details-panel');
+            const detailsDateEl = document.getElementById('details-date');
+            const detailsContentEl = document.getElementById('details-content');
+
+            // --- Durum (State) ---
+            let currentDate = new Date();
+            currentDate.setDate(1); 
+            let workouts = {}; 
+            let selectedCell = null;
+
+            const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+
+            // --- CSV Verisini 'program.csv' dosyasından çekme ---
+            async function fetchWorkouts() {
+                try {
+                    const response = await fetch('program.csv');
+                    if (!response.ok) {
+                        throw new Error(`CSV dosyası bulunamadı veya okunamadı: ${response.statusText}`);
+                    }
+                    
+                    const csvText = await response.text();
+                    const rows = csvText.trim().split('\n');
+                    const headers = rows.shift().split(',');
+
+                    rows.forEach(row => {
+                        if (!row) return;
+                        const values = row.split(',');
+                        const entry = headers.reduce((obj, header, index) => {
+                            obj[header.trim()] = values[index] ? values[index].trim().replace(/"/g, '') : "";
+                            return obj;
+                        }, {});
+                        if (entry.Tarih) {
+                            workouts[entry.Tarih] = entry;
+                        }
+                    });
+                } catch (error) {
+                    console.error("Veri yükleme hatası:", error);
+                    detailsContentEl.innerHTML = `<p class="text-red-500 font-bold">Hata: 'program.csv' dosyası yüklenemedi.</p><p class="text-gray-600 mt-2">Lütfen 'program.html' ile 'program.csv' dosyalarının aynı klasörde olduğundan emin olun. Bu hatayı alıyorsanız, dosyayı bir web sunucusu (örneğin VS Code Live Server eklentisi) üzerinden açmanız veya GitHub Pages gibi bir servise yüklemeniz gerekmektedir.</p>`;
+                }
+            }
+            
+            // --- Takvimi Oluşturma ---
+            function renderCalendar() {
+                calendarGrid.innerHTML = '';
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+
+                monthYearEl.textContent = `${monthNames[month]} ${year}`;
+
+                const firstDayOfMonth = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                
+                const startingDay = (firstDayOfMonth === 0) ? 6 : firstDayOfMonth - 1;
+
+                for (let i = 0; i < startingDay; i++) {
+                    calendarGrid.insertAdjacentHTML('beforeend', '<div class="day-cell empty"></div>');
+                }
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayCell = document.createElement('div');
+                    const dayDate = new Date(year, month, day);
+                    const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+                    dayCell.className = 'day-cell relative p-1 border rounded-lg flex flex-col justify-start items-center h-24 md:h-28';
+                    
+                    if (dayDate < today) {
+                        dayCell.classList.add('past-day');
+                    }
+                    
+                    if (dayDate.getTime() === today.getTime()) {
+                        dayCell.classList.add('today');
+                    }
+
+                    const dayNumber = document.createElement('span');
+                    dayNumber.className = 'self-end text-sm font-medium p-1';
+                    dayNumber.textContent = day;
+                    dayCell.appendChild(dayNumber);
+
+                    if (workouts[dateString]) {
+                        dayCell.dataset.workout = JSON.stringify(workouts[dateString]);
+                        const workoutDetails = workouts[dateString];
+
+                        // Durum (Tik/Çarpı) simgesini ekle
+                        if (workoutDetails.Durum && workoutDetails.Durum !== 'O') {
+                            const statusIconContainer = document.createElement('div');
+                            statusIconContainer.className = 'absolute top-1.5 left-1.5';
+                            let iconHTML = '';
+                            if (workoutDetails.Durum === 'T') {
+                                iconHTML = `<svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`;
+                            } else if (workoutDetails.Durum === 'X') {
+                                iconHTML = `<svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>`;
+                            }
+                            statusIconContainer.innerHTML = iconHTML;
+                            dayCell.appendChild(statusIconContainer);
+                        }
+
+                        const detailsContainer = document.createElement('div');
+                        detailsContainer.className = 'text-xs text-center leading-tight space-y-0.5 -mt-4 flex-grow flex flex-col justify-center';
+
+                        if (workoutDetails.Aktivite === 'Dinlenme') {
+                            const activityEl = document.createElement('p');
+                            activityEl.className = 'font-semibold text-green-700';
+                            activityEl.textContent = workoutDetails.Aktivite;
+                            detailsContainer.appendChild(activityEl);
+                        } else {
+                            const distanceEl = document.createElement('p');
+                            distanceEl.className = 'font-semibold text-gray-800';
+                            distanceEl.textContent = `${workoutDetails.Mesafe_km} km`;
+                            detailsContainer.appendChild(distanceEl);
+
+                            const elevationEl = document.createElement('p');
+                            elevationEl.className = 'text-gray-600';
+                            elevationEl.textContent = `${workoutDetails.Yukselme_m} m`;
+                            detailsContainer.appendChild(elevationEl);
+
+                            const zoneEl = document.createElement('p');
+                            zoneEl.className = 'font-bold text-blue-600';
+                            zoneEl.textContent = workoutDetails.Zone;
+                            detailsContainer.appendChild(zoneEl);
+                        }
+                        dayCell.appendChild(detailsContainer);
+                    }
+
+                    dayCell.addEventListener('click', () => updateDetailsPanel(dayCell, dayDate));
+                    calendarGrid.appendChild(dayCell);
+                }
+            }
+
+            // --- Detay Panelini Güncelleme ---
+            function updateDetailsPanel(cell, date) {
+                if (selectedCell) {
+                    selectedCell.classList.remove('selected');
+                }
+                cell.classList.add('selected');
+                selectedCell = cell;
+
+                detailsPanel.classList.remove('opacity-0');
+                const workoutData = cell.dataset.workout ? JSON.parse(cell.dataset.workout) : null;
+                
+                detailsDateEl.textContent = `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+
+                if (workoutData) {
+                    detailsContentEl.innerHTML = `
+                        <div class="p-4 bg-blue-50 rounded-lg">
+                            <h4 class="font-semibold text-blue-800">Mesafe & Yükselti</h4>
+                            <p class="text-blue-700">${workoutData.Mesafe_km || '0'} km / ${workoutData.Yukselme_m || '0'} m yükselme</p>
+                        </div>
+                        <div class="p-4 bg-green-50 rounded-lg">
+                            <h4 class="font-semibold text-green-800">Hedef Zone</h4>
+                            <p class="text-green-700">${workoutData.Zone || 'Belirtilmemiş'}</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <h4 class="font-semibold text-gray-800">Açıklama</h4>
+                            <p class="text-gray-700">${workoutData.Aciklama || 'Ek not bulunmuyor.'}</p>
+                        </div>
+                    `;
+                } else {
+                    detailsContentEl.innerHTML = '<p class="text-gray-500">Bu gün için planlanmış bir antrenman bulunmuyor. Dinlenme günü!</p>';
+                }
+            }
+
+            // --- Ay Değiştirme Fonksiyonları ---
+            function changeMonth(offset) {
+                currentDate.setMonth(currentDate.getMonth() + offset);
+                renderCalendar();
+            }
+
+            prevMonthBtn.addEventListener('click', () => changeMonth(-1));
+            nextMonthBtn.addEventListener('click', () => changeMonth(1));
+
+            // --- Başlangıç ---
+            async function init() {
+                currentDate = new Date();
+                currentDate.setDate(1);
+                
+                await fetchWorkouts();
+                renderCalendar();
+            }
+
+            init();
+        });
+    </script>
+</body>
+</html>
